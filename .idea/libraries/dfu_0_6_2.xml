@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="dfu-0.6.2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/no.nordicsemi.android/dfu/0.6.2/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/no.nordicsemi.android/dfu/0.6.2/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/no.nordicsemi.android/dfu/0.6.2/51ef47d1dc5338561060626002f585bd7e76dc77/dfu-0.6.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
