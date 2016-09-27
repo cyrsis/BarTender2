@@ -33,15 +33,19 @@ package com.onpaper.victor.bartender;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.illposed.osc.OSCMessage;
+import com.illposed.osc.OSCPortOut;
 import com.mbientlab.metawear.AsyncOperation;
 import com.mbientlab.metawear.Message;
 import com.mbientlab.metawear.RouteManager;
 import com.mbientlab.metawear.UnsupportedModuleException;
+import com.mbientlab.metawear.data.CartesianFloat;
 import com.mbientlab.metawear.module.Barometer;
 import com.mbientlab.metawear.module.Bme280Barometer;
 import com.mbientlab.metawear.module.Bmp280Barometer;
@@ -50,6 +54,7 @@ import com.mbientlab.metawear.module.Bmp280Barometer.OversamplingMode;
 import com.onpaper.victor.bartender.help.HelpOptionAdapter;
 
 import java.io.FileOutputStream;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
@@ -66,6 +71,10 @@ public class BarometerFragment extends SensorFragment {
 
     private RouteManager altitudeRouteManager= null;
     private final ArrayList<Entry> altitudeData= new ArrayList<>(), pressureData= new ArrayList<>();
+
+    private String ipAddress = "192.168.41.232";
+    private int port = 7474;
+    private OSCPortOut oscPortOut = null;
 
     private class BarometerMessageHandler implements RouteManager.MessageHandler {
         private final ArrayList<Entry> dataEntries;
@@ -125,7 +134,15 @@ public class BarometerFragment extends SensorFragment {
                     @Override
                     public void success(RouteManager result) {
                         streamRouteManager= result;
-                        result.subscribe(PRESSURE_STREAM_KEY, new BarometerMessageHandler(pressureData, 0));
+                        result.subscribe(PRESSURE_STREAM_KEY, new BarometerMessageHandler(pressureData, 0){
+                            @Override
+                            public void process(Message msg) {
+                                Log.i("Bar", "Bar: " + msg.getData(Float.class));
+                                sendOSC("/Bar/ "+msg.getData(Float.class));
+
+                            }
+                        })
+                        ;
 
                     }
                 });
@@ -139,6 +156,29 @@ public class BarometerFragment extends SensorFragment {
                         barometerModule.start();
                     }
                 });
+
+        initializeOSC();
+    }
+    public void sendOSC(String message) {
+        try {
+            new AsyncSendOSCTask(this,this.oscPortOut).execute(new OSCMessage(message));
+        } catch (Exception exp) {
+            Log.i("test", "Cannt send Message "+ exp);
+        }
+    }
+    private void initializeOSC() {
+        try {
+
+            if(oscPortOut != null) {
+                oscPortOut.close();
+            }
+
+            oscPortOut = new OSCPortOut(InetAddress.getByName(ipAddress), port);
+        }
+        catch(Exception exp) {
+            Log.i("OSC Port Error" ,"Cannt make the port");
+            oscPortOut = null;
+        }
     }
 
     @Override

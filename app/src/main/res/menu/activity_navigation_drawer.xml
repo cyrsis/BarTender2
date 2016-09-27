@@ -29,7 +29,6 @@
         <item android:id="@+id/nav_accelerometer" android:title="@string/navigation_fragment_accelerometer" />
         <item android:id="@+id/nav_barometer" android:title="@string/navigation_fragment_barometer" />
         <item android:id="@+id/nav_gyro" android:title="@string/navigation_fragment_gyro" />
-        <item android:id="@+id/nav_ibeacon" android:title="@string/navigation_fragment_ibeacon" />
         <item android:id="@+id/nav_magnetometer" android:title="@string/navigation_fragment_magnetometer" />
         <item android:id="@+id/nav_settings" android:title="@string/navigation_fragment_settings" />
     </group>

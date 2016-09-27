@@ -32,6 +32,7 @@
 package com.onpaper.victor.bartender;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -39,12 +40,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.components.YAxis;
+import com.illposed.osc.OSCMessage;
+import com.illposed.osc.OSCPortOut;
 import com.mbientlab.metawear.AsyncOperation;
+import com.mbientlab.metawear.Message;
 import com.mbientlab.metawear.RouteManager;
 import com.mbientlab.metawear.UnsupportedModuleException;
+import com.mbientlab.metawear.data.CartesianFloat;
 import com.mbientlab.metawear.module.Gyro;
 import com.onpaper.victor.bartender.help.HelpOption;
 import com.onpaper.victor.bartender.help.HelpOptionAdapter;
+
+import java.net.InetAddress;
 
 /**
  * Created by etsai on 8/19/2015.
@@ -53,6 +60,10 @@ public class GyroFragment extends ThreeAxisChartFragment {
     private static final float[] GYRAVAILABLE_RANGES= {125.f, 250.f, 500.f, 1000.f, 2000.f};
     private static final float GYRINITIAL_RANGE= 125.f, GYR_ODR= 25.f;
     private static final String GYR_STREAM_KEY= "gyro_stream";
+
+    private String ipAddress = "192.168.41.232";
+    private int port = 7474;
+    private OSCPortOut oscPortOut = null;
 
     private Gyro gyroModule= null;
     private int GYRrangeIndex = 0;
@@ -65,6 +76,8 @@ public class GyroFragment extends ThreeAxisChartFragment {
     @Override
     protected void boardReady() throws UnsupportedModuleException {
         gyroModule= mwBoard.getModule(Gyro.class);
+
+        initializeOSC();
     }
 
     @Override
@@ -112,10 +125,47 @@ public class GyroFragment extends ThreeAxisChartFragment {
         routeManagerResult.onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
             @Override
             public void success(RouteManager result) {
+
+                result.subscribe(GYR_STREAM_KEY,  new RouteManager.MessageHandler(){
+                    @Override
+                    public void process(Message msg) {
+                        Log.i("Gyro", "Gyro: " + msg.getData(CartesianFloat.class));
+                        sendOSC("/Gyro/ "+msg.getData(CartesianFloat.class).x()+ " "+msg.getData(CartesianFloat.class).y()+" "+msg.getData(CartesianFloat.class).z());
+
+                    }
+                })
+                ;
+
                 gyroModule.start();
             }
         });
+
+
     }
+
+    public void sendOSC(String message) {
+        try {
+            new AsyncSendOSCTask(this,oscPortOut).execute(new OSCMessage(message));
+        } catch (Exception exp) {
+            Log.i("test", "Cannt send Message "+ exp);
+        }
+    }
+
+    private void initializeOSC() {
+        try {
+
+            if(oscPortOut != null) {
+                oscPortOut.close();
+            }
+
+            oscPortOut = new OSCPortOut(InetAddress.getByName(ipAddress), port);
+        }
+        catch(Exception exp) {
+            Log.i("OSC Port Error" ,"Cannt make the port");
+            oscPortOut = null;
+        }
+    }
+
 
     @Override
     protected void clean() {

@@ -11,8 +11,20 @@ import com.illposed.osc.OSCPortOut;
 public class AsyncSendOSCTask extends AsyncTask<OSCMessage, Void, Boolean> {
     private final OSCPortOut oscPortOut;
 
+    public AsyncSendOSCTask(BarometerFragment accelerometerFragment, OSCPortOut oscPortOut) {
+        this.oscPortOut  = oscPortOut;
+    }
+
     public AsyncSendOSCTask(AccelerometerFragment accelerometerFragment, OSCPortOut oscPortOut) {
         this.oscPortOut  = oscPortOut;
+    }
+
+    public AsyncSendOSCTask(MagnetometerFragment magnetometerFragment, OSCPortOut oscPortOut) {
+        this.oscPortOut  = oscPortOut;
+    }
+
+    public AsyncSendOSCTask(GyroFragment gyroFragment, OSCPortOut oscPortOut) {
+        this.oscPortOut = oscPortOut;
     }
 
     @Override

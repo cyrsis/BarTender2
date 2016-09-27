@@ -31,12 +31,20 @@
 
 package com.onpaper.victor.bartender;
 
+import android.util.Log;
+
+import com.illposed.osc.OSCMessage;
+import com.illposed.osc.OSCPortOut;
 import com.mbientlab.metawear.AsyncOperation;
+import com.mbientlab.metawear.Message;
 import com.mbientlab.metawear.RouteManager;
 import com.mbientlab.metawear.UnsupportedModuleException;
+import com.mbientlab.metawear.data.CartesianFloat;
 import com.mbientlab.metawear.module.Bmm150Magnetometer;
 import com.mbientlab.metawear.module.Bmm150Magnetometer.PowerPreset;
 import com.onpaper.victor.bartender.help.HelpOptionAdapter;
+
+import java.net.InetAddress;
 
 /**
  * Created by etsai on 1/12/2016.
@@ -44,6 +52,9 @@ import com.onpaper.victor.bartender.help.HelpOptionAdapter;
 public class MagnetometerFragment extends ThreeAxisChartFragment {
     private static final float B_FIELD_RANGE= 250.f, MAG_ODR= 10.f;
     private static final String MAGSTREAM_KEY = "b_field_stream";
+    private String ipAddress = "192.168.41.232";
+    private int port = 7474;
+    private OSCPortOut oscPortOut = null;
 
     private Bmm150Magnetometer magModule= null;
 
@@ -71,10 +82,44 @@ public class MagnetometerFragment extends ThreeAxisChartFragment {
         magrouteManagerResult.onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
             @Override
             public void success(RouteManager result) {
+
+                result.subscribe(MAGSTREAM_KEY, new RouteManager.MessageHandler() {
+                            @Override
+                            public void process(Message msg) {
+                                Log.i("Mag", "Mag : " + msg.getData(CartesianFloat.class));
+                                sendOSC("/Mag/ "+msg.getData(CartesianFloat.class).x()+ " "+msg.getData(CartesianFloat.class).y()+" "+msg.getData(CartesianFloat.class).z());
+
+                            }
+                });
+
                 magModule.enableBFieldSampling();
                 magModule.start();
             }
         });
+        initializeOSC();
+    }
+
+    private void initializeOSC() {
+        try {
+
+            if(oscPortOut != null) {
+                oscPortOut.close();
+            }
+
+            oscPortOut = new OSCPortOut(InetAddress.getByName(ipAddress), port);
+        }
+        catch(Exception exp) {
+            Log.i("OSC Port Error" ,"Cannt make the port");
+            oscPortOut = null;
+        }
+    }
+
+    public void sendOSC(String message) {
+        try {
+            new AsyncSendOSCTask(this,this.oscPortOut).execute(new OSCMessage(message));
+        } catch (Exception exp) {
+            Log.i("OSC Mag", "***Cannt send Message "+ exp);
+        }
     }
 
     @Override
