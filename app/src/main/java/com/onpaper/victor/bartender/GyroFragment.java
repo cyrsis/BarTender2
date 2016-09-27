@@ -61,7 +61,7 @@ public class GyroFragment extends ThreeAxisChartFragment {
     private static final float GYRINITIAL_RANGE= 125.f, GYR_ODR= 25.f;
     private static final String GYR_STREAM_KEY= "gyro_stream";
 
-    private String ipAddress = "192.168.41.232";
+    private String ipAddress = "192.168.100.136";
     private int port = 7474;
     private OSCPortOut oscPortOut = null;
 

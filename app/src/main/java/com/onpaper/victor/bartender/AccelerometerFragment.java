@@ -29,7 +29,7 @@ public class AccelerometerFragment extends ThreeAxisChartFragment {
     private static final float[] MMA845Q_RANGES= {2.f, 4.f, 8.f}, BMI160_RANGES= {2.f, 4.f, 8.f, 16.f};
     private static final float INITIAL_RANGE= 2.f, ACC_FREQ= 50.f;
     private static final String STREAM_KEY= "accel_stream";
-    private String ipAddress = "192.168.41.232";
+    private String ipAddress = "192.168.100.136";
     private int port = 7474;
     private OSCPortOut oscPortOut = null;
 

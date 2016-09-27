@@ -52,7 +52,7 @@ import java.net.InetAddress;
 public class MagnetometerFragment extends ThreeAxisChartFragment {
     private static final float B_FIELD_RANGE= 250.f, MAG_ODR= 10.f;
     private static final String MAGSTREAM_KEY = "b_field_stream";
-    private String ipAddress = "192.168.41.232";
+    private String ipAddress = "192.168.100.136";
     private int port = 7474;
     private OSCPortOut oscPortOut = null;
 

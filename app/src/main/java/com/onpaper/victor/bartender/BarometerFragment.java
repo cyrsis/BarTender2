@@ -72,7 +72,7 @@ public class BarometerFragment extends SensorFragment {
     private RouteManager altitudeRouteManager= null;
     private final ArrayList<Entry> altitudeData= new ArrayList<>(), pressureData= new ArrayList<>();
 
-    private String ipAddress = "192.168.41.232";
+    private String ipAddress = "192.168.100.136";
     private int port = 7474;
     private OSCPortOut oscPortOut = null;
 
