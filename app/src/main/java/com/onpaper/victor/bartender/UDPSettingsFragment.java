@@ -33,6 +33,7 @@ package com.onpaper.victor.bartender;
 
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,7 @@ import com.onpaper.victor.bartender.help.HelpOptionAdapter;
 /**
  * Created by etsai on 8/22/2015.
  */
-public class UDPSettingsFragment extends ModuleFragmentBase {
+public class UDPSettingsFragment extends ListFragment {
     private final static int[] CONFIG_WRAPPERS;
 
     static {
@@ -71,34 +72,15 @@ public class UDPSettingsFragment extends ModuleFragmentBase {
     private short timeout;
     private byte txPower;
 
-    public UDPSettingsFragment() {
-        super(R.string.navigation_fragment_settings);
-    }
 
-    @Override
-    protected void boardReady() throws UnsupportedModuleException {
-        isReady= true;
 
-        debugModule= mwBoard.getModule(Debug.class);
-        settingsModule= mwBoard.getModule(Settings.class);
-        macroModule= mwBoard.getModule(Macro.class);
 
-        settingsModule.readAdConfig().onComplete(readConfigHandler);
-    }
-
-    @Override
-    protected void fillHelpOptionAdapter(HelpOptionAdapter adapter) {
-        adapter.add(new HelpOption(R.string.config_name_ad_device_name, R.string.config_desc_ad_device_name));
-        adapter.add(new HelpOption(R.string.config_name_ad_timeout, R.string.config_desc_ad_timeout));
-        adapter.add(new HelpOption(R.string.config_name_ad_tx, R.string.config_desc_ad_tx));
-        adapter.add(new HelpOption(R.string.config_name_ad_interval, R.string.config_desc_ad_interval));
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setRetainInstance(true);
-        return inflater.inflate(R.layout.fragment_settings, container, false);
+        return inflater.inflate(R.layout.fragment_udpsettings, container, false);
     }
 
     @Override
